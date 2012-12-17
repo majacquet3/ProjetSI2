@@ -1,4 +1,4 @@
 ProjetSI2
 =========
 
-Projet Si reppris à partir du début
+Projet Si repris à partir du début
