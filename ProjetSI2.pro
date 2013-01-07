@@ -1,14 +1,20 @@
+Qt += system
+
 SOURCES += \
     main.cpp \
     Handle/virtualhandle.cpp \
     Handle/modelhandle.cpp \
-    Handle/videoview.cpp
+    Handle/videoview.cpp \
+    Handle/videoextractor.cpp \
+    Handle/videoreader.cpp
 
 HEADERS += \
     Handle/Handle.h \
     Handle/virtualhandle.h \
     Handle/modelhandle.h \
-    Handle/videoview.h
+    Handle/videoview.h \
+    Handle/videoextractor.h \
+    Handle/videoreader.h
 
 LIBS += -lopencv_core \
         -lopencv_gpu \
@@ -16,3 +22,6 @@ LIBS += -lopencv_core \
         -lopencv_legacy \
         -lopencv_imgproc \
         -lopencv_highgui
+
+OTHER_FILES += \
+    README.md

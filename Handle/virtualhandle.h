@@ -38,7 +38,7 @@ public:
         @param ImplImage * src2 : second image, NULL if unused
         @return IplImage * : handle's result.
       */
-    virtual IplImage * startHandle(IplImage * src1, IplImage * src2) = 0;
+    virtual IplImage * startHandle(IplImage * src1, IplImage * src2 = NULL) = 0;
 protected :
 
 private:
