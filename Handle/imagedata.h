@@ -3,6 +3,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <memory>
+#include <QPixmap>
 
 /** @brief Contains an Image and his data */
 class ImageData
@@ -15,6 +16,10 @@ public:
     /** @brief Get the stocked Image
         @return IplImage * : pointer to the stocked image. */
     IplImage * getImage(void);
+
+    /** @brief create a QPixmap from the image for an print in a Qt's widget
+        @return QPixmap : QPixmap created */
+    QPixmap toPixmap(void);
 private :
 
     /** @brief Image */

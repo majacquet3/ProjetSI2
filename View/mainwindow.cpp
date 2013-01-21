@@ -19,5 +19,5 @@ MainWindow::~MainWindow()
 
 void MainWindow::setImage(const ImageDataPtr result, const ImageDataPtr , const ImageDataPtr)
 {
-
+    ui->labelImage->setPixmap(result->toPixmap());
 }
