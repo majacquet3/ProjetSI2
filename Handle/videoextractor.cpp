@@ -48,13 +48,20 @@ void VideoExtractor::run(void)
         src1 = m_videoStream[0].getImage();
         src2 = m_videoStream[1].getImage();
 
+        ImageDataPtr source1, source2;
+
+        if(src1)
+            source1 = ImageDataPtr(new ImageData(*src1));
+        if(src2)
+            source2 = ImageDataPtr(new ImageData(*src2));
+
         endOfCapture = timer.nsecsElapsed();
-        IplImage * result = VirtualHandle::executeHandle(MainHandle, src1, src2);
+        ImageDataPtr result = VirtualHandle::executeHandle(MainHandle, source1, source2);
         endOfHandle = timer.nsecsElapsed();
 
 
         m_nbImageHandled++;
-        emit imageHandled(*result, *src1 , *src2);
+        emit imageHandled(result, source1, source2);
         if( m_nbMaxImage && m_nbImageHandled == m_nbMaxImage )
         {
             stoppedByUser = false;

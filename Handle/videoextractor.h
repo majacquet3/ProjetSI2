@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <QSharedPointer>
 #include "videoreader.h"
+#include "imagedata.h"
 
 /** @brief Extract one or two video stream and call VideoView::setImage after handle the image with the MainHandle
   specified in Handle.h.
@@ -66,11 +67,11 @@ private :
 
 signals :
     /** @brief emitted when the handle of the current image is finish
-        @param Image result : handle result
-        @param Image src1 : first image source
-        @param Image src2 : second image source
+        @param const ImageDataPtr result : handle result
+        @param const ImageDataPtr src1 : first image source
+        @param const ImageDataPtr src2 : second image source
       */
-    void imageHandled(IplImage result, IplImage src1 , IplImage src2);
+    void imageHandled(const ImageDataPtr result, const ImageDataPtr src1, const ImageDataPtr src2);
     /** @brief emitted when the handle is finished.
         @param bool : true if the handle has been stopped by the user */
 signals :

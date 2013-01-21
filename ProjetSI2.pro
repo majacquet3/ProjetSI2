@@ -1,12 +1,16 @@
 Qt += system
 
+QMAKE_CXXFLAGS += -std=c++0x
+CXXFLAGS="-std=c++11"
+
 SOURCES += \
     main.cpp \
     Handle/virtualhandle.cpp \
     Handle/modelhandle.cpp \
     Handle/videoview.cpp \
     Handle/videoextractor.cpp \
-    Handle/videoreader.cpp
+    Handle/videoreader.cpp \
+    Handle/imagedata.cpp
 
 HEADERS += \
     Handle/Handle.h \
@@ -14,7 +18,8 @@ HEADERS += \
     Handle/modelhandle.h \
     Handle/videoview.h \
     Handle/videoextractor.h \
-    Handle/videoreader.h
+    Handle/videoreader.h \
+    Handle/imagedata.h
 
 LIBS += -lopencv_core \
         -lopencv_gpu \

@@ -14,11 +14,11 @@ public:
 
     /** @brief Handle one or two IplImage<br>
         An ModelHandle's startHandle() will call startHandle one more time.
-        @param IplImage src1  : first image
-        @param IplImage src2 : second image, NULL if unused
-        @return Image : handle's result.
+        @param ImageDataPtr src1  : first image
+        @param ImageDataPtr src2 : second image, NULL if unused
+        @return ImageDataPtr : handle's result.
       */
-    virtual IplImage * startHandle(const IplImage * src1, const IplImage * src2);
+    virtual ImageDataPtr startHandle(const ImageDataPtr src1, const ImageDataPtr src2);
 
     /** @brief For exemple */
     int tour;

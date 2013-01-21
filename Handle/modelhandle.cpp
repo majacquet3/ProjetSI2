@@ -17,7 +17,7 @@ ModelHandle::ModelHandle()
 }
 
 // your handle
-IplImage * ModelHandle::startHandle(const IplImage *, const IplImage *)
+ImageDataPtr ModelHandle::startHandle(const ImageDataPtr, const ImageDataPtr)
 {
     //write your own handle process here
 
