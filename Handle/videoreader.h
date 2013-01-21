@@ -9,6 +9,8 @@ class VideoReader
 public:
     VideoReader();
 
+    virtual ~VideoReader() = default;
+
     /** @brief grab the current image from the video stream.<br/>
         There is no copy so it's faster so we can get several image from several video stream at the same time
         with more accuracy. */

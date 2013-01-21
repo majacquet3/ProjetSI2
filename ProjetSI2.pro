@@ -10,7 +10,8 @@ SOURCES += \
     Handle/videoview.cpp \
     Handle/videoextractor.cpp \
     Handle/videoreader.cpp \
-    Handle/imagedata.cpp
+    Handle/imagedata.cpp \
+    View/mainwindow.cpp
 
 HEADERS += \
     Handle/Handle.h \
@@ -19,7 +20,8 @@ HEADERS += \
     Handle/videoview.h \
     Handle/videoextractor.h \
     Handle/videoreader.h \
-    Handle/imagedata.h
+    Handle/imagedata.h \
+    View/mainwindow.h
 
 LIBS += -lopencv_core \
         -lopencv_gpu \
@@ -30,3 +32,6 @@ LIBS += -lopencv_core \
 
 OTHER_FILES += \
     README.md
+
+FORMS += \
+    View/mainwindow.ui
