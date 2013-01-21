@@ -28,17 +28,17 @@ public:
 
     /** @brief execute the handle's startHandle() of the handle which name is given in parameters.
     @param const std::string & name : handle's name
-    @param IplImage * src1  : first image
-    @param ImplImage * src2 : second image, NULL if unused
-    @return IplImage * : handle's result. */
-    static IplImage * executeHandle(const std::string & name, IplImage * src1, IplImage * src2);
+    @param IplImage src1  : first image
+    @param IplImage src2 : second image, NULL if unused
+    @return Image : handle's result. */
+    static IplImage * executeHandle(const std::string & name, const IplImage * src1, const IplImage * src2);
 
     /** @brief Handle one or two IplImage
         @param IplImage * src1  : first image
-        @param ImplImage * src2 : second image, NULL if unused
-        @return IplImage * : handle's result.
+        @param IplImage * src2 : second image, NULL if unused
+        @return Image : handle's result.
       */
-    virtual IplImage * startHandle(IplImage * src1, IplImage * src2 = NULL) = 0;
+    virtual IplImage  * startHandle(const IplImage * src1, const IplImage * src2 = NULL) = 0;
 protected :
 
 private:

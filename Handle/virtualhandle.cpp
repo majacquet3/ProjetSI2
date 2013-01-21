@@ -8,7 +8,7 @@ VirtualHandle::VirtualHandle(const std::string & name)
 
 VirtualHandle::ListHandle VirtualHandle::m_listHandle;
 
-IplImage * VirtualHandle::executeHandle(const std::string & name, IplImage * src1, IplImage * src2)
+IplImage * VirtualHandle::executeHandle(const std::string & name, const IplImage * src1, const IplImage * src2)
 {
     return m_listHandle[name]->startHandle(src1, src2);
 }

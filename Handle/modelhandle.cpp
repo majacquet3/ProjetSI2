@@ -17,13 +17,13 @@ ModelHandle::ModelHandle()
 }
 
 // your handle
-IplImage * ModelHandle::startHandle(IplImage * src1, IplImage * src2)
+IplImage * ModelHandle::startHandle(const IplImage *, const IplImage *)
 {
     //write your own handle process here
 
     //for example :
     if(tour--)
-        return VirtualHandle::executeHandle("Modele", NULL, NULL); //call the handle named "modele".
+        return VirtualHandle::executeHandle("Modele", NULL, NULL ); //call the handle named "modele".
     else
         return NULL;
 }

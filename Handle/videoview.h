@@ -2,20 +2,24 @@
 #define VIDEOVIEW_H
 
 #include <opencv2/opencv.hpp>
+#include <QObject>
 
 /** @brief Abstract class which used for show IplImage.
     The method setImage() is called by VideoExtractor each time an IplImage have been handled  */
-class VideoView
+class VideoView : QObject
 {
+    Q_OBJECT
 public:
     VideoView();
     virtual ~VideoView(){}
 
-    /** @brief Set the new Image to the View.
-        @param IplImage * src1 : source 1, NULL if unused.
-        @param IplImage * src2 : source 2, NULL if unused.
-        @param IplImage * result : handle's result, NULL if unused. */
-    virtual void setImage( IplImage * src1 , IplImage * src2 , IplImage * result) = 0;
+public slots :
+    /** @brief called when the handle of the current images are finished.
+      Don't forget to connect it.
+        @param Image result : handle result
+        @param Image src1 : first image source
+        @param Image src2 : second image source */
+    virtual void setImage( IplImage result, IplImage src1 ,  IplImage src2) = 0;
 };
 
 #endif // VIDEOVIEW_H
