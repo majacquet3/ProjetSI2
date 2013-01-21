@@ -11,7 +11,8 @@ SOURCES += \
     Handle/videoextractor.cpp \
     Handle/videoreader.cpp \
     Handle/imagedata.cpp \
-    View/mainwindow.cpp
+    View/mainwindow.cpp \
+    exception.cpp
 
 HEADERS += \
     Handle/Handle.h \
@@ -21,7 +22,8 @@ HEADERS += \
     Handle/videoextractor.h \
     Handle/videoreader.h \
     Handle/imagedata.h \
-    View/mainwindow.h
+    View/mainwindow.h \
+    exception.h
 
 LIBS += -lopencv_core \
         -lopencv_gpu \

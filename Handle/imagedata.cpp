@@ -1,4 +1,5 @@
 #include "imagedata.h"
+#include "../exception.h"
 
 ImageData::ImageData(const IplImage & image)
     : m_image(image)
@@ -11,12 +12,11 @@ QPixmap ImageData::toPixmap(void)
 {
     if( m_image.depth != IPL_DEPTH_8U)
     {
-        qWarning("This type of IplImage is not implemented in QOpenCVWidget\ndepth must be 'IPL_DEPTH_8U'");
-        return QPixmap();
+        throwExc("This type of IplImage is not implemented in QOpenCVWidget\ndepth must be 'IPL_DEPTH_8U", "ImageData", "toPixmap");
     }
     if( m_image.nChannels != 3)
     {
-        qWarning("This number of channels is not supported\n");
+        throwExc("This number of channels is not supported\n", "ImageData", "toPixmap");
         return QPixmap();
     }
     QImage image(m_image.width, m_image.height, QImage::Format_RGB32);
