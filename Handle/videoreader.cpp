@@ -1,6 +1,7 @@
 #include "videoreader.h"
 
 VideoReader::VideoReader()
+    : m_video(nullptr)
 {
 }
 
