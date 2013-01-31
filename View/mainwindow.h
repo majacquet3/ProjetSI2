@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "../Handle/videoextractor.h"
 #include "../Handle/videoview.h"
+#include <QImage>
 
 namespace Ui {
 class MainWindow;
@@ -20,6 +21,8 @@ public:
 private:
     Ui::MainWindow *ui;
     VideoExtractor m_extractor;
+    QImage *image;
+
 public slots :
     virtual void setImage(const ImageDataPtr result, const ImageDataPtr src1 , const ImageDataPtr src2);
 };
