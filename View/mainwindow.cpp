@@ -1,24 +1,24 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    m_extractor(new VideoExtractor() )
 {
+    VideoReader * cam1 = new VideoReader();
+    cam1->useCamera();
     ui->setupUi(this);
-    connect( &m_extractor, SIGNAL(imageHandled(ImageDataPtr,ImageDataPtr,ImageDataPtr)),
+    qRegisterMetaType<ImageDataPtr>("ImageDataPtr");/* obligatoire, à n'appeler qu'une fois et dans une fonction /!\ */
+    connect( m_extractor, SIGNAL(imageHandled(ImageDataPtr,ImageDataPtr,ImageDataPtr)),
              this, SLOT(setImage(ImageDataPtr,ImageDataPtr,ImageDataPtr)));
-
-    ui->sliderCurseur->setTickInterval(1);
-    ui->labelCurseur->setNum(0);
-    connect(ui->sliderCurseur,SIGNAL(valueChanged(int)),ui->labelCurseur,SLOT(setNum(int)));
-
-    connect(ui->buttonNext, SIGNAL(clicked()), ui->labelImage,
-            SLOT(setPixmap
-                 (QPixmap("/home/mathieu/Dropbox/ProjetSI/ImagesVolcan/cam49-05-10-2012_time_21-38-54-0193$/TIFF_Image_2012-10-05-21h39m14s947.TIFF"))));
+    m_extractor->useSource(cam1, 0);
+    m_extractor->start(200000000);
 }
 
 MainWindow::~MainWindow()
 {
+    m_extractor->stop();
     delete ui;
 }
 
@@ -26,4 +26,3 @@ void MainWindow::setImage(const ImageDataPtr result, const ImageDataPtr , const 
 {
     ui->labelImage->setPixmap(result->toPixmap());
 }
-
