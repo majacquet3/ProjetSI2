@@ -39,7 +39,7 @@ void FolderReader::remplissage(const std::string nom, QDateTime date, QString s)
     if(rep == false)
         throw Exception::buildException("Attention ce n'est pas un nom de dossier valide !!!", "FolderReader", "Folderreader", EPC);
 
-    for(ListPath::iterator it=listePath.begin() ; it!=listePath.end() ; ++it)
+    for(ListPath::iterator it = listePath.begin() ; it != listePath.end() ; ++it)
     {
         if(it->first == date)
             it->second = s;
@@ -51,9 +51,27 @@ void FolderReader::remplissage(const std::string nom, QDateTime date, QString s)
 bool FolderReader::isPossible(const std::string nom)
 {
     QDir dir( nom.c_str() );
+
     if( (!(dir.isReadable())) )
         return false;
+
     return true;
+}
+
+
+
+IplImage * FolderReader::getImage(void)
+{
+    static IplImage * data = NULL;
+
+    if( data )
+    {
+        cvReleaseImage(&data);
+    }
+
+    data = cvLoadImage( iterator->second.toStdString().c_str() );
+
+    return data;
 }
 
 

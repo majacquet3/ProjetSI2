@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "../Handle/videoextractor.h"
 #include "../Handle/videoview.h"
+#include "../Handle/Reader/folderreader.h"
 
 namespace Ui {
 class MainWindow;
