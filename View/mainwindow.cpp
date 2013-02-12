@@ -12,9 +12,12 @@ MainWindow::MainWindow(QWidget *parent) :
     qRegisterMetaType<ImageDataPtr>("ImageDataPtr");/* obligatoire, Ã  n'appeler qu'une fois et dans une fonction /!\ */
     connect( m_extractor, SIGNAL(imageHandled(ImageDataPtr,ImageDataPtr,ImageDataPtr)),
              this, SLOT(setImage(ImageDataPtr,ImageDataPtr,ImageDataPtr)));
+
     FolderReader * f = new FolderReader("/home/mathieu/Dropbox/ProjetSI/ImagesVolcan/cam49-05-10-2012_time_21-38-54-0193");
-    m_extractor->useSource(f, 0);
-    //m_extractor->useSource(cam1, 0);
+        m_extractor->useSource(f, 0);
+
+    // m_extractor->useSource(cam1, 0);
+    m_extractor->showParameters( ui->scrollAreaWidgetContents );
     m_extractor->start(200000000);
 }
 
@@ -26,10 +29,5 @@ MainWindow::~MainWindow()
 
 void MainWindow::setImage(const ImageDataPtr result, const ImageDataPtr , const ImageDataPtr)
 {
-    if(result)
-    {
-    result->toPixmap();
-    ui->labelImage;
     ui->labelImage->setPixmap(result->toPixmap());
-    }
 }
