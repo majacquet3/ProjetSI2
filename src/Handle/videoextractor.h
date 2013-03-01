@@ -7,6 +7,8 @@
 #include "videoreader.h"
 #include "imagedata.h"
 #include "Parameters/handleparameters.h"
+#include <QMutex>
+#include <QWaitCondition>
 
 /** @brief Extract one or two video stream and call VideoView::setImage after handle the image with the MainHandle
   specified in Handle.h.
@@ -58,8 +60,8 @@ public :
 
     void changeHandleParameters( SourceParameters *source, QWidget * area = nullptr);
 
-
     bool isStarted(void);
+
 private :
 
     /** @brief true if the handle is stopped else return false */
@@ -92,6 +94,10 @@ private :
 
     bool threadLanced;
 
+    QMutex mutex;
+
+    QWaitCondition cond;
+
 signals :
     /** @brief emitted when the handle of the current image is finish
         @param const ImageDataPtr result : handle result
@@ -102,13 +108,15 @@ signals :
     /** @brief emitted when the handle is finished.
         @param bool : true if the handle has been stopped by the user */
 
+signals :
     void finished(bool);
 
-public slots :
-
+public slots:
     void stopFlux(void);
     void lancerFlux(void);
-
+    void precedent(void);
+    void suivant(void);
+    void slid(void);
 };
 
 bool VideoExtractor::isStopped(void)

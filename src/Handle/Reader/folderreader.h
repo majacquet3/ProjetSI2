@@ -29,18 +29,15 @@ public:
     /** @brief grab the current image from the video stream.<br/>
         There is no copy so it's faster so we can get several image from several video stream at the same time
         with more accuracy. */
-    void grab();
+    void grab(void);
 
-    void remplissage(const std::string nom, QDateTime date, QString s);
+    void r_grab(void);
 
     /** @brief Return true if the reading cursor can be moved
         @brief bool : true if the reading cursor can be moved else false */
     bool acceptSeek(void);
 
     IplImage * getImage(void);
-
-
-    // TODO : IplImage * getImage(void); un petit oublie ? ^^
 
 private :
     typedef std::map<QDateTime, QString> ListPath;
@@ -51,6 +48,7 @@ private :
     ListPath m_listePath;
 
     std::string m_path;
+
 };
 
 #endif // FOLDERREADER_H

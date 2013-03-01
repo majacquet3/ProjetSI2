@@ -2,13 +2,14 @@
 #include "../parseexception.h"
 #include <QRegExp>
 #include <QStringList>
+#include <QDir>
 
 FolderReader::FolderReader(const std::string & path)
     : m_path(path)
 {
     QDir dir( path.c_str() );
     if( ! dir.isReadable() )
-        throw Exception::buildException("Attention le dossier " + path + " n'existe pas ou vous n'avez pas les droits pour y accéder.", "FolderReader", "Folderreader", EPC);
+        throw Exception::buildException("Attention le dossier " + path + " ("+ dir.absolutePath().toStdString() +") n'existe pas ou vous n'avez pas les droits pour y accéder.", "FolderReader", "Folderreader", EPC);
     QFileInfoList liste = dir.entryInfoList(QDir::Files);
 
     for(auto info : liste)
@@ -54,6 +55,14 @@ void FolderReader::grab()
 }
 
 
+void FolderReader::r_grab()
+{
+    if( m_iterator == m_listePath.end() )
+        m_iterator = m_listePath.begin();
+    else
+        --m_iterator;
+}
+
 bool FolderReader::acceptSeek(void)
 {
     return true;
@@ -71,3 +80,4 @@ IplImage * FolderReader::getImage(void)
         data = cvLoadImage( (m_path + m_iterator->second.toStdString() ).c_str() );
     return data;
 }
+

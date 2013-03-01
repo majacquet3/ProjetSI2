@@ -55,6 +55,13 @@ void VideoExtractor::run(void)
     timer.start();
     while( ! m_stopped )
     {
+        mutex.lock();
+        while(!threadLanced)
+        {
+            cond.wait(&mutex);
+        }
+        mutex.unlock();
+
         begin = timer.nsecsElapsed();
 
         m_videoStream[0]->grab(); // a for for that ... I'm too lazy
@@ -85,6 +92,7 @@ void VideoExtractor::run(void)
         else
             result = source1;
         //endOfHandle = timer.nsecsElapsed();
+
         if( ! result)
         {
             throw Exception::buildException("Votre traitement ne retourne pas de résultat!", "VideoExtractor", "run", EPC);
@@ -100,9 +108,9 @@ void VideoExtractor::run(void)
         qint64 waitTime = ( m_paramPeriod.toInt() - timer.nsecsElapsed() + begin )/1000;
         if(waitTime < 0)
         {
-            std::cerr << "Warning : la boucle a du retard : " <<  waitTime
+         /*   std::cerr << "Warning : la boucle a du retard : " <<  waitTime
                       << "\nDuree de la boucle : " << m_paramPeriod.toInt()
-                      << "\nDuree reelle : " << timer.nsecsElapsed() << std::endl;
+                      << "\nDuree reelle : " << timer.nsecsElapsed() << std::endl; */
         }
         else
             QThread::usleep( waitTime );
@@ -144,9 +152,27 @@ void VideoExtractor::stopFlux(void)
 void VideoExtractor::lancerFlux(void)
 {
     threadLanced = true;
+    cond.wakeAll();
 }
 
 bool VideoExtractor::isStarted(void)
 {
     return threadLanced;
+}
+
+void VideoExtractor::suivant(void)
+{
+    m_videoStream[0]->grab();
+    m_videoStream[1]->grab();
+}
+
+void VideoExtractor::precedent(void)
+{
+    m_videoStream[0]->r_grab();
+    m_videoStream[1]->r_grab();
+}
+
+void VideoExtractor::slid(void)
+{
+
 }

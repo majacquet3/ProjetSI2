@@ -4,27 +4,45 @@
 #include "../Handle/Handle.h"
 #include "../Handle/Parameters/slider.h"
 #include "../Handle/Parameters/combobox.h"
-#include "../Handle/Reader/folderreader.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     m_extractor(new VideoExtractor() ),
-    m_areaMode( QMdiArea::SubWindowView )
+    m_subImage(nullptr),
+    m_subImageSource1(nullptr),
+    m_subImageSource2(nullptr),
+    m_subResults(nullptr),
+    m_areaMode( Default )
 {
 
 
     ui->setupUi(this);
-    m_subImage = new SubMdiWindows("Image Finale");
-    ui->mdiArea->addSubWindow(m_subImage);
 
-    m_subImage->setWindowTitle("Image finale");
+    ui->mdiArea->setMainWindow(this);
 
-    connect(ui->mdiAreaMode, SIGNAL(clicked()), this, SLOT(changeMdiMode()) );
-    connect(m_subImage, SIGNAL(destroyed(QObject*)), this, SLOT(onCloseMainSubWindows()));
-
+    connect(ui->mdiAreaMode, SIGNAL(currentIndexChanged(int)), this, SLOT(changeMdiMode(int)) );
+    connect(ui->mdiArea, SIGNAL(onResize()), this, SLOT(resizeMdi()) );
+    connect(ui->actionAfficher_les_param_tres, SIGNAL(triggered()), this, SLOT(showHideDockParameters()));
+    connect(ui->actionQuitter, SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(ui->actionVue_par_d_faut, SIGNAL(triggered()), this, SLOT(enterInDefaultMode()));
+    connect(ui->actionVue_Tabulation, SIGNAL(triggered()), this, SLOT(enterInTabulationMode()));
+    connect(ui->actionVue_Libre, SIGNAL(triggered()), this, SLOT(enterInFreeMode()));
+    connect(ui->actionAfficher_Cacher_le_contr_le_de_flux, SIGNAL(triggered(bool)), this, SLOT(showHideDockStreamControl()));
+    connect(ui->actionPlein_cran, SIGNAL(triggered()), this, SLOT(fullscreen()));
+    connect(ui->actionAttacher_D_tacher_une_fen_tre, SIGNAL(triggered()), this, SLOT(attachDetach()));
     connect(ui->buttonPlay, SIGNAL(clicked()), m_extractor, SLOT(lancerFlux()));
     connect(ui->buttonStop, SIGNAL(clicked()), m_extractor, SLOT(stopFlux()));
+    connect(ui->buttonNext, SIGNAL(clicked()), m_extractor, SLOT(suivant()));
+    connect(ui->buttonPrevious, SIGNAL(clicked()), m_extractor, SLOT(precedent()));
+    connect(ui->sliderDureeMax, SIGNAL(valueChanged(int)), m_extractor, SLOT(slid()));
+
+    //ui->sliderDureeMax->setTickInterval(1);
+
+
+    ui->mdiAreaMode->addItem("Default", Default);
+    ui->mdiAreaMode->addItem("Tabulation", Tabulation);
+    ui->mdiAreaMode->addItem("Libre", Free);
 
     int max = 1<<(sizeof(int)*8-2) ;
 
@@ -46,6 +64,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_extractor->useSource(cam1, 0);
     m_extractor->showParameters( ui->scrollAreaWidgetContents );
 
+    ui->mdiAreaMode->setCurrentIndex( ui->mdiAreaMode->findData(m_areaMode) );
+    VirtualHandle::setView(ui->mdiArea);
+
     m_extractor->start();
 }
 
@@ -55,29 +76,169 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::setImage(const ImageDataPtr result, const ImageDataPtr , const ImageDataPtr)
+void MainWindow::setImage(const ImageDataPtr result, const ImageDataPtr source1, const ImageDataPtr source2)
 {
     if(m_subImage)
     {
         m_subImage->updateImage(result->toPixmap());
     }
+    if(m_subImageSource1 && source1)
+    {
+        m_subImageSource1->updateImage(source1->toPixmap());
+    }
+    if( m_subImageSource2 && source2)
+    {
+        m_subImageSource2->updateImage(source2->toPixmap());
+    }
+    if( m_subResults )
+        m_subResults->extractInformationFromImage(result);
 }
 
-void MainWindow::changeMdiMode(void)
+void MainWindow::changeMdiMode(int index)
 {
-    if(m_areaMode == QMdiArea::TabbedView)
+    Mode mode = m_areaMode;
+    if(index != -1)
+        mode = (Mode)ui->mdiAreaMode->itemData(index).toInt();
+    switch(mode)
     {
-        ui->mdiArea->setViewMode( QMdiArea::SubWindowView );
-        m_areaMode = QMdiArea::SubWindowView;
+        case Default :
+        {
+            if( ! m_subImage) {
+                m_subImage = new SubMdiWindowsImage("Image Finale", ui->mdiArea);
+            }
+            if( ! m_subImageSource1) {
+                m_subImageSource1 = new SubMdiWindowsImage("Image Source1", ui->mdiArea);
+            }
+            if( ! m_subImageSource2) {
+                m_subImageSource2 = new SubMdiWindowsImage("Image Source2", ui->mdiArea);
+            }
+            if( ! m_subResults ) {
+                m_subResults = new SubMdiWindowsResults("Donnees issues du traitement", ui->mdiArea);
+                connect(ui->actionSauvegarder_les_donn_es_acquises, SIGNAL(triggered()), m_subResults, SLOT(saveIntoFile()));
+                connect(m_subResults, SIGNAL(resultFile(QString,bool)) ,ui->statusbar, SLOT(showMessage(QString)));
+            }
+            m_subImageSource2->showNormal();
+            m_subImageSource1->showNormal();
+            m_subResults->showNormal();
+            m_subImage->showNormal();
+
+            if(m_areaMode == Tabulation)
+                ui->mdiArea->setViewMode( QMdiArea::SubWindowView );
+            int midX = ui->mdiArea->size().width()/2;
+            int midY = ui->mdiArea->size().height()/2;
+            m_subImageSource1->systemMove(0,0);
+            m_subImageSource1->systemResize(midX, midY);
+            m_subImageSource2->systemMove(midX,0);
+            m_subImageSource2->systemResize(midX, midY);
+            m_subImage->systemMove(0,midY);
+            m_subImage->systemResize(midX, midY);
+            m_subResults->systemMove(midX,midY);
+            m_subResults->systemResize(midX, midY);
+
+            ui->mdiArea->reductAllExcept( std::set<SubMdiWindows *>({m_subImage, m_subImageSource1, m_subImageSource2, m_subResults}) );
+        }
+        break;
+
+        case Tabulation :
+            if(m_areaMode != Tabulation)
+                ui->mdiArea->setViewMode( QMdiArea::TabbedView );
+        break;
+        case Free :
+            if(m_areaMode == Tabulation)
+                ui->mdiArea->setViewMode( QMdiArea::SubWindowView );
+        break;
     }
-    else
-    {
-        ui->mdiArea->setViewMode( QMdiArea::TabbedView );
-        m_areaMode = QMdiArea::TabbedView;
-    }
+    m_areaMode = mode;
 }
 
 void MainWindow::onCloseMainSubWindows(void)
 {
-    m_subImage = nullptr;
+    QObject * ptr = QObject::sender();
+    if(ptr == m_subImage)
+        m_subImage = nullptr;
+    else if(ptr == m_subImageSource1)
+        m_subImageSource1 = nullptr;
+    else if(ptr == m_subImageSource2)
+        m_subImageSource2 = nullptr;
+    else
+        m_subResults = nullptr;
+    if( m_areaMode == Default )
+        ui->mdiAreaMode->setCurrentIndex( ui->mdiAreaMode->findData(Free) );
 }
+
+void MainWindow::quitDefaultMode(void)
+{
+    if( m_areaMode == Default )
+        ui->mdiAreaMode->setCurrentIndex( ui->mdiAreaMode->findData(Free) );
+}
+
+void MainWindow::resizeMdi(void)
+{
+    changeMdiMode(-1);
+}
+
+void MainWindow::showHideDockParameters(void)
+{
+    ui->dockWidget_2->setVisible(! ui->dockWidget_2->isVisible());
+}
+
+void MainWindow::enterInDefaultMode(void)
+{
+    ui->mdiAreaMode->setCurrentIndex( ui->mdiAreaMode->findData(Default) );
+}
+
+void MainWindow::enterInTabulationMode(void)
+{
+    if( m_areaMode != Tabulation )
+        ui->mdiAreaMode->setCurrentIndex( ui->mdiAreaMode->findData(Tabulation) );
+}
+
+void MainWindow::enterInFreeMode(void)
+{
+    if( m_areaMode != Free )
+        ui->mdiAreaMode->setCurrentIndex( ui->mdiAreaMode->findData(Free) );
+}
+
+void MainWindow::showHideDockStreamControl(void)
+{
+    ui->dockWidget->setVisible(! ui->dockWidget->isVisible());
+}
+
+void MainWindow::fullscreen(void)
+{
+    if( isFullScreen() )
+        showNormal();
+    else
+        showFullScreen();
+}
+
+void MainWindow::saveDataFileName(void)
+{
+    //TODO : add params
+}
+
+void MainWindow::windowStateChanged(Qt::WindowStates, Qt::WindowStates states)
+{
+    if( states == Qt::WindowActive || states == Qt::WindowNoState)
+        return;
+    if( m_areaMode == Default )
+    {
+        QObject * sender = QObject::sender();
+        if ( states &  Qt::WindowMinimized && ( sender == m_subImage || sender == m_subImageSource1
+                             || sender == m_subImageSource2 || sender == m_subResults )  )
+            enterInFreeMode();
+    }
+}
+
+void MainWindow::attachDetach(void)
+{
+    SubMdiWindows * subWind = static_cast<SubMdiWindows *>(ui->mdiArea->currentSubWindow() );
+    if( subWind )
+    {
+        if( subWind->isAttached() )
+            subWind->detach();
+        else
+            subWind->attach();
+    }
+}
+
